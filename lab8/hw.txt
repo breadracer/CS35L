@@ -1,0 +1,30 @@
+1.
+The network is still secure since in order to decode the bytes they
+obtained they need to have the private key, which is stored on the local
+machines where they cannot access. It is possible that they get the public
+key we use but they still cannot translate the public key into the private
+key.
+
+1) In this case the network is still secure. By observing all the keystrokes,
+they can obtain the paraphrase we use to generate the private key when using
+ssh-keygen. However, it is still not possible to get the private key from the
+paraphrase since the generation of private key is a random process, i.e. for
+the same paraphrase one may obtain different private key under different
+operations. Without letting the hackers know the private key the data across
+the network is still secure.
+
+2) In this case, since the private key is stored in the USB and once they
+obtain the physical USB device they can get the private key, with which they
+can decode the bytes, the network is no longer secure.
+
+2.
+The reason is that gpg2 --verify only verifies whether the data is tampered,
+without verifying whether the file is originally created by the auther.
+One can just untar it, replace the public key, and recreate the tar file with
+a new .sig file, and in this case gpg2 --verify will still output good
+signature.
+To fix this problem, one can go to a third party organization that specifies
+in keeping track out the public keys' ownership. By providing the public key
+to those organizations, they will send the public key securely to let the
+receiver have the correct key to do the verification, whether than a
+potentially replaced one.

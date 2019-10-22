@@ -1,0 +1,37 @@
+I first run sort --version and get back that the version number for sort is 8.30,
+which is a new enough version.
+
+Then, I generate the 2^24 floating point numbers by running:
+((a=1<<26))
+cat /dev/urandom | od -t fF -N $a | sed 's/^[[:alnum:]]*[[:space:]]*//g' | tr -s ' ' '\n' > float
+
+Then, using different --parallel=N flag, I test the time of the following commands and get
+the following outputs:
+
+[shunning@lnxsrv07 ~/Documents/lab6]$ time -p sort -g floats > /dev/null
+real 37.15
+user 200.47
+sys 0.80
+
+[shunning@lnxsrv07 ~/Documents/lab6]$ time -p sort -g floats --parallel=1 > /dev/null
+real 179.03
+user 178.69
+sys 0.32
+[shunning@lnxsrv07 ~/Documents/lab6]$ time -p sort -g floats --parallel=2 > /dev/null
+real 98.60
+user 187.96
+sys 0.44
+[shunning@lnxsrv07 ~/Documents/lab6]$ time -p sort -g floats --parallel=4 > /dev/null
+real 57.26
+user 196.04
+sys 0.64
+[shunning@lnxsrv07 ~/Documents/lab6]$ time -p sort -g floats --parallel=8 > /dev/null
+real 36.86
+user 199.06
+sys 0.77
+
+The outputs above indicates that as the number of threads increases, the amount of real
+time required for sorting is decreasing proportionally while the user time is stable. We
+also notice that the sort without --parallel flag generally runs the same amount of time
+as --parallel=8. This may indicates that the sort without --parallel flag is using 8 threads
+by default setting.

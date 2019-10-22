@@ -1,0 +1,81 @@
+Lab partner: Kelly Cheng
+
+1. I have Ubuntu 18.04 pre-installed on my computer in which I perform the
+lab. After setting up and connecting beaglebone to Ubuntu, I ssh into it by:
+root@beaglebone:~# ssh root@192.168.7.2
+My partner and I both connect the devices to my personal hotspot of my phone
+
+2. Then, I update the software and install Openssh:
+root@beaglebone:~# sudo apt-get update
+root@beaglebone:~# sudo apt-get install openssh-server
+root@beaglebone:~# sudo apt-get install openssh-client
+
+3. I setup the configuration for server side:
+setting up client account:
+root@beaglebone:~# sudo useradd -d /home/client -m client
+root@beaglebone:~# sudo passwd client
+root@beaglebone:~# cd /home/client
+root@beaglebone:~# sudo mkdir .ssh
+root@beaglebone:~# sudo chown -R client .ssh
+root@beaglebone:~# sudo chmod 700 .ssh
+
+I run `ifconfig` and get the IP address of mine: 172.20.10.8
+while my parter's IP address is 172.20.10.7
+
+Then I wait for my partner to be client, and it works fine.
+
+4. I setup the configuration for client side:
+generate keys:
+
+root@beaglebone:~# ssh-keygen
+Generating public/private rsa key pair.
+Enter file in which to save the key (/root/.ssh/id_rsa): 
+Created directory '/root/.ssh'.
+Enter passphrase (empty for no passphrase): 
+Enter same passphrase again: 
+Your identification has been saved in /root/.ssh/id_rsa.
+Your public key has been saved in /root/.ssh/id_rsa.pub.
+The key fingerprint is:
+bd:dd:7a:83:9f:5c:ab:db:bd:fa:11:36:6e:e4:2b:5d root@beaglebone
+The key's randomart image is:
++---[RSA 2048]----+
+|                 |
+|                 |
+|                 |
+|         .       |
+|        S .    = |
+|           o .= E|
+|          . ..o=o|
+|            .+=+=|
+|            .*XBo|
++-----------------+
+
+The public key I used is: breadracer
+
+Then I login to my partner's server: (The username is also client)
+root@beaglebone:~# ssh client@172.20.10.7
+I enter the password, and then logout.
+
+Then, to setup key-based authentication, I do:
+root@beaglebone:~# ssh-copy-id -i client@172.20.10.7
+After typing yes, I type in my password to login, and then exit.
+Then, I do:
+root@beaglebone:~# eval "$(ssh-agent)"
+root@beaglebone:~# ssh-add
+The public key I entered is: breadracer
+And afterwards I can login without typing anything.
+
+Then I try:
+root@beaglebone:~# ssh -X client@172.20.10.7
+$ xterm
+$ gedit
+$ firefox
+Initially, xterm and gedit doesn't work, and after my partner doing:
+$ sudo apt-get install xterm
+$ sudo apt-get install gedit
+the three commands all work.
+ssh -X and ssh -Y, according to the source in the assignment page,
+differ in that ssh -X is more secure than ssh -Y. ssh -X treats the
+remote machine as an untrusted client while -Y treats as trusted.
+I guess that ssh -X will intercept and reject some sensitive request
+made by the client while ssh -Y will not.

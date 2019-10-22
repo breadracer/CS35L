@@ -1,0 +1,62 @@
+I first download the old stable version of coreutils, and untar the .gz
+file using tar -xvf FILE. Then I try to build the old version as it is
+but end up with the following error message:
+
+Making install in lib
+make[1]: Entering directory
+'/w/home.01/cs/ugrad/shunning/Documents/lab4/coreutils-with-bug/lib'
+make  install-am
+make[2]: Entering directory
+'/w/home.01/cs/ugrad/shunning/Documents/lab4/coreutils-with-bug/lib'
+if gcc -DHAVE_CONFIG_H -DLIBDIR=\"/u/cs/ugrad/shunning/
+Documents/lab4/test/lib\" -I. -I. -I..  -I.. -I.   -g -O2
+-MT utimecmp.o -MD -MP -MF ".deps/utimecmp.Tpo" -c
+-o utimecmp.o utimecmp.c; \
+then mv -f ".deps/utimecmp.Tpo" ".deps/utimecmp.Po";
+else rm -f ".deps/utimecmp.Tpo"; exit 1; fi
+make[2]: Leaving directory
+'/w/home.01/cs/ugrad/shunning/Documents/lab4/coreutils-with-bug/lib'
+make[1]: Leaving directory
+'/w/home.01/cs/ugrad/shunning/Documents/lab4/coreutils-with-bug/lib'
+
+Then, I applied the renaming patch with patch -p0 < coreutils.diff and
+it successfully make. This fix the problem since it renames the buggy
+function name.
+
+After that, I use the old version and reproduce the problem:
+$ test=$(pwd)
+$ tmp=$(mktemp -d)
+$ cd $tmp
+$ touch -d '1918-11-11 11:00 GMT' wwi-armistice
+$ touch now
+$ sleep 1
+$ touch now1
+$ TZ=UTC0 $(test)/ls -lt --full-time wwi-armistice now now1
+-rw-r--r-- 1 shunning csugrad 0 1918-11-11 11:00:00.000000000 \
++0000 wwi-armistice
+-rw-r--r-- 1 shunning csugrad 0 2018-11-03 22:58:00.488666977 +0000 now1
+-rw-r--r-- 1 shunning csugrad 0 2018-11-03 22:57:52.842456787 +0000 now
+$ cd
+$ rm -fr $tmp
+
+Using a debugger, I figure out that the problem appears in timespec.h in
+the lib/ directory since the function timespec_cmp does not consider the
+case of integer overflow. So I add the functionality.
+
+I contruct the patch file lab4.diff using the diff -u command.
+
+Then I reproduce the problem on home directory:
+
+$ cd ~
+$ touch -d '1918-11-11 11:00 GMT' wwi-armistice
+$ touch now
+$ sleep 1
+$ touch now1
+$ TZ=UTC0 ls -lt --full-time wwi-armistice now now1
+-rw-r--r-- 1 shunning csugrad 0 2054-12-17 09:28:16.000000000 \
+-0800 wwi-armistice
+-rw-r--r-- 1 shunning csugrad 0 2018-11-05 22:05:44.633695000 -0800 now1
+-rw-r--r-- 1 shunning csugrad 0 2018-11-05 22:05:43.628335000 -0800 now
+
+The SEASnet also does not handle the problem correctly in that the
+overflowing problem still exists.

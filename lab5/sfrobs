@@ -1,0 +1,27 @@
+#!/bin/bash
+export LC_ALL='C'
+
+buffer=$(cat - | tr -s "[ \n]" " " | sed "s/^ //g")
+
+numbers=""
+xornumbers=""
+for i in {0..255}
+do
+    number=$(echo "obase=8; $i" | bc)
+    numbers="$numbers"\\"$number"
+    xornumberbase=$((($i^42)))
+    xornumber=$(echo "obase=8; $xornumberbase" | bc)
+    xornumbers="$xornumbers"\\"$xornumber"
+done
+
+if [ $# -gt 1 ]; then
+    echo "Wrong number of operands"
+elif [ $# -eq 1 ]; then
+    if [ "$1" == "-f" ]; then
+	printf "$buffer" | tr "$numbers" "$xornumbers" | sort -f | tr "$xornumbers" "$numbers"
+    else
+	echo "Invalid operand $1"
+    fi
+else
+    printf "$buffer" | tr "$numbers" "$xornumbers" | sort | tr "$xornumbers" "$numbers"
+fi

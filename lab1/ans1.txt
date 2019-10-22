@@ -1,0 +1,68 @@
+1. man -k
+
+2. /usr/local/cs/bin/mv and /usr/bin/sh
+   used command is which mv ; which sh
+
+3. find /usr/bin/ -name ?r
+   the found commands are tr, ar, pr
+   tr - Translate, squeeze, and/or delete characters from standard input, writing to standard output.
+   ar - Create, modify, and extract from archives.
+   pr - Convert text files for printing.
+ 
+4. /etc/alternatives/emacs
+   used command is readlink /usr/bin/emacs
+
+5. version number of /usr/bin/gcc is 4.8.5
+   version number of plain gcc is 8.2.0
+   They are different programs because they are under differnt paths. The plain gcc is under the prepended path while the /usr/bin/gcc is the absolute path
+
+6. u+sx means set user ID upon execution and add execute permission to the owner of the file
+   o-w means remove write permission from users who are not the owner of the file or members of the group
+
+7. man find
+   find /usr/local/cs/ -mtime -28
+
+8. which find
+   find /usr/bin/ -type l
+
+9. man find
+   find /usr/lib64 -type f -printf '%T+%p\n' > print.txt
+   sort -r print.txt
+
+   oldest file: tcl8.5/Tix8.4.3/bitmaps/act_fold.gif
+
+   find /usr/lib64 -name '.*' -type f -printf '%T+%p\n' > print.txt
+   sort -r print.txt
+
+   oldest hidden file: .libcrypto.so.0.9.8e.hmac
+
+10. it gets data from the environmental variable LOCPAT
+    used command is man locale and man 7 locale
+
+11. downcase-dwim, downcase-region, downcase-word
+    used command is C-h a downcase
+
+12. ‘C-M-r’: Begin reverse incremental regexp search (‘isearch-backward-regexp’)
+    ‘C-M-v’: Scroll the next window (‘scroll-other-window’)
+    used command are C-h K C-M-r and C-h K C-M-v
+
+13. Quitting with ‘C-g’ is the way to get rid of a partially typed command, or a numeric argument that you don’t want.  Furthermore, if you are in the middle of a command that is running, ‘C-g’ stops the command in a relatively safe way. If the region is active, ‘C-g’ deactivates the mark, unless Transient Mark mode is off. If you are in the middle of an incremental search, ‘C-g’ behaves specially; it may take two successive ‘C-g’ characters to get out of a search.
+    ‘C-g’ works by setting the variable ‘quit-flag’ to ‘t’ the instant ‘C-g’ is typed; Emacs Lisp checks this variable frequently, and quits if it is non-‘nil’.  ‘C-g’ is only actually executed as a command if you type it while Emacs is waiting for input.  In that case, the command it runs is ‘keyboard-quit’.
+    On a text terminal, if you quit with ‘C-g’ a second time before the first ‘C-g’ is recognized, you activate the emergency-escape feature and return to the shell.
+
+    used command is C-h K C-g
+
+14. Yank the last kill into the buffer, at point (‘yank’).
+    “Yanking” means reinserting text previously killed.  The usual way to move or copy text is to kill it and then yank it elsewhere. The basic yanking command is ‘C-y’ (‘yank’).  It inserts the most recent kill, leaving the cursor at the end of the inserted text. It also sets the mark at the beginning of the inserted text, without activating the mark.
+
+    the command is invoked by C-y
+
+    used command is C-h F yank and C-h w yank
+
+15. cd /usr/bin
+    ls -l 
+    emacs
+    M-x dired /usr/bin/
+    The differnece is that the dired command outputs the hidden files while ls -l does not
+    
+   

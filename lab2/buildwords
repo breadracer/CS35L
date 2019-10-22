@@ -1,0 +1,33 @@
+#! /bin/bash
+
+sort_file ( ) {
+    tr -cs "pkmnwlhaeiou\'" '[\n*]' $1 |
+    tr [:upper:] [:lower:] |
+    sort -u
+}
+
+get_dict ( ) {
+    curl -Os "http://mauimapp.com/moolelo/hwnwdseng.htm"
+    grep -E '((<td>).+(</td>))' hwnwdseng.htm |
+    sed '1~2d' |
+    sed 's/<td>//g' |
+    sed 's/<\/td>//g' |
+    sed 's/<u>//g' |
+    sed 's/<\/u>//g' |
+    sed 's/, /\n/g' |
+    sed 's/ /\n/g' |
+    tr -d "^( +)" |
+    sed "s/\`/\'/g" |
+    tr [:upper:] [:lower:] |
+    grep -v '?' |
+    grep -v '-' |
+    # should I remove '-' also?
+    sort -u > hwords
+    rm hwnwdseng.htm
+}
+
+get_dict
+
+#sort_file $1 | comm -23 - hwords
+cat hwords
+rm hwords

@@ -1,0 +1,86 @@
+#! /bin/bash
+
+FILE_LIST=`find "$1" -maxdepth 1 -type f -printf "%f\n" | sort`
+D=$1
+
+check_diff() {
+    result=`diff "$D/$1" "$D/$2"`
+    if [ -n "$result" ]; then
+	return 1
+    else
+	return 0
+    fi
+}
+
+length=`echo "$FILE_LIST" | wc -l`
+i=1
+while [ $i -le $length ]
+do
+    sample=`echo "$FILE_LIST" | head -n "$i" | tail -n 1`
+    SAME_FILE_LIST=""
+    j=1
+    while [ $j -le $length ]
+    do
+	candidate=`echo "$FILE_LIST" | head -n "$j" | tail -n 1`
+	check_diff "$sample" "$candidate"
+	if [ $? -eq 0 ]
+	then
+	    if [ -n "$SAME_FILE_LIST" ]; then
+		SAME_FILE_LIST="$SAME_FILE_LIST"$'\n'"$candidate"
+	    else
+		SAME_FILE_LIST="$candidate"
+	    fi
+	fi
+	let j=j+1
+    done
+    DOT_LIST=""
+    REG_LIST=""
+    same_length=`echo "$SAME_FILE_LIST" | wc -l`
+    k=1
+    while [ $k -le $same_length ]
+    do
+	identical=`echo "$SAME_FILE_LIST" | head -n "$k" | tail -n 1`
+	dot_check=`echo "$identical" | grep "^\."`
+	if [ -n "$dot_check" ]; then
+	    if [ -n "$DOT_LIST" ]; then		
+		DOT_LIST="$DOT_LIST"$'\n'"$identical"
+	    else
+		DOT_LIST="$identical"
+	    fi
+	else
+	    if [ -n "$REG_LIST" ]; then
+		REG_LIST="$REG_LIST"$'\n'"$identical"
+	    else
+		REG_LIST="$identical"
+	    fi
+	fi
+	let k=k+1
+    done
+    DOT_LIST=`echo "$DOT_LIST" | sort`
+    REG_LIST=`echo "$REG_LIST" | sort`
+    reserve=""
+    dot_flag=0
+    if [ -n "$DOT_LIST" ]; then
+	reserve=`echo "$DOT_LIST" | head -n 1`
+	dot_flag=1
+    else
+	reserve=`echo "$REG_LIST" | head -n 1`
+    fi
+    dash_check=`echo "$reserve" | grep "^\-"`
+    reserve_tmp=$(printf '%q\n' "$reserve" | sed "s/\./\\\./g")
+    if [ -n "$dash_check" ]; then
+	reserve_tmp=$(echo "$reserve_tmp" | sed "s/\-/\\\-/g")
+    fi
+    DELETE_FILE_LIST=`echo "$SAME_FILE_LIST" | grep -xv "$reserve_tmp"`
+    delete_length=`echo "$DELETE_FILE_LIST" | wc -l`
+    l=1
+    while [ $l -le $delete_length ]
+    do
+	delete=`echo "$DELETE_FILE_LIST" | head -n "$l" | tail -n 1`
+	rm "$D/$delete"
+	ln "$D/$reserve" "$D/$delete"
+	let l=l+1
+    done
+    let i=i+1
+done
+    

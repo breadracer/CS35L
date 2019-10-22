@@ -1,0 +1,96 @@
+1.2.
+[shunning@lnxsrv07 ~/Documents/lab9/hw/diffutils]$ git checkout v3.0 -b quote
+Switched to a new branch 'quote'
+
+3.
+[shunning@lnxsrv07 ~/Documents/lab9/hw/diffutils]$ patch -p1 < ../../diffutils/quote-3.0-patch.txt 
+patching file src/analyze.c
+patching file src/cmp.c
+patching file src/context.c
+patching file src/diff.c
+patching file src/diff3.c
+patching file src/dir.c
+patching file src/sdiff.c
+patching file src/side.c
+patching file src/util.c
+
+4.5.
+[shunning@lnxsrv07 ~/Documents/lab9/hw/diffutils]$ emacs quote-3.0-patch.txt
+And I do C-x 4 a
+
+6.
+[shunning@lnxsrv07 ~/Documents/lab9/hw/diffutils]$ emacs quote-3.0-patch.txt 
+[shunning@lnxsrv07 ~/Documents/lab9/hw/diffutils]$ git add .
+[shunning@lnxsrv07 ~/Documents/lab9/hw/diffutils]$ git commit -F ChangeLog
+[quote b08fe2c] 2018-12-07  Shunning Ma  <shunning@lnxsrv07.seas.ucla.edu>
+ Committer: Shunning Ma <shunning@lnxsrv07.seas.ucla.edu>
+Your name and email address were configured automatically based
+on your username and hostname. Please check that they are accurate.
+You can suppress this message by setting them explicitly. Run the
+following command and follow the instructions in your editor to edit
+your configuration file:
+
+    git config --global --edit
+
+After doing this, you may fix the identity used for this commit with:
+
+    git commit --amend --reset-author
+
+ 10 files changed, 506 insertions(+), 56 deletions(-)
+ create mode 100644 quote-3.0-patch.txt
+
+7.
+[shunning@lnxsrv07 ~/Documents/lab9/hw/diffutils]$ git format-patch -1 --stdout > formatted-patch.txt
+
+
+8.
+My partner is Kelly Cheng from lab 3
+
+[shunning@lnxsrv07 ~/Documents/lab9/partner/diffutils]$ git am ../../formatted-patch.txt
+Applying: 2018-12-07 Kejia Cheng <kejia@lnxsrv05.seas.ucla.edu>
+.git/rebase-apply/patch:1107: trailing whitespace.
+ 
+.git/rebase-apply/patch:1110: space before tab in indent.
+ 	 || (e == LONGINT_INVALID_SUFFIX_CHAR && **argptr == delimiter))
+.git/rebase-apply/patch:1118: space before tab in indent.
+ 	  _("SKIP values may be followed by the following multiplicative suffixes:\n\
+.git/rebase-apply/patch:1123: space before tab in indent.
+ 	  _("Exit status is 0 if inputs are the same, 1 if different, 2 if trouble."));
+.git/rebase-apply/patch:1127: space before tab in indent.
+ 	{
+warning: squelched 74 whitespace errors
+warning: 79 lines add whitespace errors.
+
+[shunning@lnxsrv07 ~/Documents/lab9/partner/diffutils]$ ./bootstrap
+[shunning@lnxsrv07 ~/Documents/lab9/partner/diffutils]$ ./configure
+[shunning@lnxsrv07 ~/Documents/lab9/partner/diffutils]$ make
+
+[shunning@lnxsrv07 ~/Documents/lab9/partner/diffutils]$ ./src/diff . -
+./src/diff: cannot compare '-' to a directory
+[shunning@lnxsrv07 ~/Documents/lab9/partner/diffutils]$ ./src/diff --help
+...
+FILES are 'FILE1 FILE2' or 'DIR1 DIR2' or 'DIR FILE...' or 'FILE... DIR'.
+If --from-file or --to-file is given, there are no restrictions on FILES.
+If a FILE is '-', read standard input.
+Exit status is 0 if inputs are the same, 1 if different, 2 if trouble.
+...
+
+9.
+I re-install the diffutils as above and patch my own patch:
+[shunning@lnxsrv07 ~/Documents/lab9/hw/diffutils]$ git am formatted-patch.txt
+
+I got a bunch of warnings, and after that I do:
+[shunning@lnxsrv07 ~/Documents/lab9/hw/diffutils]$ make distdir
+And I cd into the directory and use emacs see the Changelog. It appears that
+my ChangeLog is on the top of it.
+
+2018-12-07  Shunning Ma  <shunning@lnxsrv07.seas.ucla.edu>
+
+        2018-12-07 Shunning Ma <shunning@lnxsrv07.seas.ucla.edu>
+                * quote-3.0-patch.txt: Change `' to ''
+
+...
+
+10.
+[shunning@lnxsrv07 ~/Documents/lab9/hw/diffutils]$ cd ~eggert/src/gnu/emacs
+[shunning@lnxsrv07 ~/Documents/lab9/hw/diffutils]$ gitk

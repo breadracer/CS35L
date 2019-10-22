@@ -1,0 +1,17 @@
+Q1: The patch improve the performance of ls since
+POSIX.1-2008 came out and specified that -a and -A
+should override each other, so it is more stardardized.
+
+Q2: The company should watch out if there are features
+that are already built dependent on the buggy feature of
+unmodified ls. If so, after the patch version is adopted
+, there may be new bugs on these features.
+
+Q3: IndexError occurs: index out of range. This is because this
+is an empty file so random.choice() fails.
+
+Q4: In python3, the following syntax
+        except IOError as (errno, strerror):
+    fails, since in python3 this feature is not supported, have to say
+    	except IOError as err:
+    then refer errno as err.errno, strerror as err.strerror instead.

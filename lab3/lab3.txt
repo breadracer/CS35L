@@ -1,0 +1,36 @@
+Laboratory: Installing a small change to a big package
+
+1. The output of the command `gpg --verify
+--keyring ./gnu-keyring.gpg coreutils-8.29.tar.xz.sig` is:
+
+gpg: Signature made Wed 27 Dec 2017 10:29:05 AM PST using RSA key ID 306037D9
+gpg: Good signature from "Pádraig Brady <P@draigBrady.com>"
+gpg:                 aka "Pádraig Brady <pbrady@redhat.com>"
+gpg:                 aka "Pádraig Brady <pixelbeat@gnu.org>"
+gpg: WARNING: This key is not certified with a trusted signature!
+gpg:          There is no indication that the signature belongs to the owner.
+Primary key fingerprint: 6C37 DC12 121A 5006 BC1D  B804 DF6F D971 3060 37D9
+
+which means that the verification is successful
+
+
+2. I did the following steps:
+Untar the compressed file using command `tar -xvf coreutils-8.29.tar.xz`
+cd into the resulting folder, and run configure with the prefix option be
+my own directory, and then make install
+
+3. I cd into my directory, then into bin, and test with `./ls -aA`, which
+shows the buggy result
+
+4. I copy the patch file into the folder coreutils-8.29 and run
+`patch -p1 < patch.diff`, which shows that the NEWS file is not
+successfully patched while the other 3 files are successfully patched
+
+5. In order to make successfully, I edit the patch file so that it
+only patches the ls.c file. And I redo the step 2, patch the edited
+patch to the source code and run the make command
+the command I used here are: patch -p1 < patch.diff ; make
+
+6. As tested, the modified ls works within the src directory
+inside the package while the unmodified that was installed on my
+own directory does not work
